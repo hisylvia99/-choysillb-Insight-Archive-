@@ -470,7 +470,7 @@
       closeModal();
     }
 
-    async function importData(e) {
+ async function importData(e) {
       const file = e.target.files[0];
       if(!file) return;
       const reader = new FileReader();
@@ -478,10 +478,24 @@
         try {
           const imported = JSON.parse(event.target.result);
           let itemsToImport = [];
+          
           if(Array.isArray(imported)) {
             itemsToImport = imported;
-          } else if(imported.newsList) {
-            itemsToImport = imported.newsList;
+          } else if(typeof imported === 'object' && imported !== null) {
+            if(Array.isArray(imported.newsList)) {
+              itemsToImport = itemsToImport.concat(imported.newsList);
+            }
+            if(Array.isArray(imported.trashList)) {
+              itemsToImport = itemsToImport.concat(imported.trashList);
+            }
+            if(itemsToImport.length === 0) {
+              itemsToImport = Object.values(imported.values || imported).flat().filter(item => item && item.id);
+            }
+          }
+
+          if(itemsToImport.length === 0) {
+            alert('불러올 데이터가 없습니다. JSON 구조를 확인해주세요.');
+            return;
           }
 
           for(let item of itemsToImport) {
@@ -489,9 +503,12 @@
             await saveToSupabase(item);
           }
           await loadInitialData();
-          alert('백업 데이터를 불러와 Supabase에 동기화했습니다!');
+          alert('백업 데이터를 성공적으로 불러와 동기화했습니다!');
         } catch(err) {
+          console.error(err);
           alert('올바른 JSON 파일이 아닙니다.');
+        } finally {
+          e.target.value = '';
         }
       };
       reader.readAsText(file);
