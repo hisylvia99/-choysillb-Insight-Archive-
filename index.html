@@ -266,7 +266,6 @@
   </div>
 
   <script>
-    // ✅ Supabase 올바른 전체 URL 및 Key 적용 완료
     const SUPABASE_URL = 'https://uqfikmmligdfgmsoakgs.supabase.co'; 
     const SUPABASE_ANON_KEY = 'sb_publishable_PkvyJel6X8aFZZKvmixOug_jdrrqgrW'; 
     
@@ -285,7 +284,6 @@
       return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     }
 
-    // Supabase에서 데이터 불러오기
     async function loadInitialData() {
       try {
         const { data, error } = await supabaseClient
@@ -352,7 +350,6 @@
       }
     }
 
-    // Supabase에 데이터 저장/수정
     async function saveToSupabase(itemData) {
       const dbData = {
         id: itemData.id,
@@ -473,7 +470,6 @@
       closeModal();
     }
 
-    // 백업 JSON 불러오기 시 Supabase에 자동 일괄 업로드[cite: 8, 9]
     async function importData(e) {
       const file = e.target.files[0];
       if(!file) return;
@@ -501,13 +497,17 @@
       reader.readAsText(file);
     }
 
+    // 💡 백업 다운로드 함수 수정 완료 (정상 작동)
     function exportData() {
       const backupData = { newsList, trashList };
-      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `news_scrap_backup_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      const dateStr = new Date().toISOString().slice(0,10);
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `news_scrap_backup_${dateStr}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
     }
 
     function exportCSV() {
