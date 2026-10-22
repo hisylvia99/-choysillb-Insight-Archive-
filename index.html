@@ -76,7 +76,6 @@
     
     <!-- 좌측 사이드바 -->
     <aside class="space-y-6">
-      <!-- 복원 완료: 유용한 바로가기 6개 전체 -->
       <div class="glass-card p-4 rounded-2xl shadow-sm space-y-2">
         <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
           <i class="fa-solid fa-globe text-blue-500"></i> 유용한 바로가기
@@ -267,8 +266,8 @@
   </div>
 
   <script>
-    // ⚠️ Supabase 설정 (본인의 URL과 Key 넣기)
-    const SUPABASE_URL = 'uqfikmmligdfgmsoakgs'; 
+    // ✅ Supabase 올바른 전체 URL 및 Key 적용 완료
+    const SUPABASE_URL = 'https://uqfikmmligdfgmsoakgs.supabase.co'; 
     const SUPABASE_ANON_KEY = 'sb_publishable_PkvyJel6X8aFZZKvmixOug_jdrrqgrW'; 
     
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -474,7 +473,7 @@
       closeModal();
     }
 
-    // 파일 불러오기 시 Supabase에 자동 저장 기능[cite: 8, 9]
+    // 백업 JSON 불러오기 시 Supabase에 자동 일괄 업로드[cite: 8, 9]
     async function importData(e) {
       const file = e.target.files[0];
       if(!file) return;
