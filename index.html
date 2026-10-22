@@ -497,17 +497,22 @@
       reader.readAsText(file);
     }
 
-    // 💡 백업 다운로드 함수 수정 완료 (정상 작동)
+    // 💡 안전하고 확실한 Blob 파일 다운로드 방식으로 전면 수정
     function exportData() {
       const backupData = { newsList, trashList };
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+      const jsonStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      
       const downloadAnchor = document.createElement('a');
       const dateStr = new Date().toISOString().slice(0,10);
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `news_scrap_backup_${dateStr}.json`);
+      downloadAnchor.href = url;
+      downloadAnchor.download = `news_scrap_backup_${dateStr}.json`;
+      
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
-      downloadAnchor.remove();
+      document.body.removeChild(downloadAnchor);
+      URL.revokeObjectURL(url);
     }
 
     function exportCSV() {
@@ -516,10 +521,14 @@
         csv += `"${item.category}","${item.date}","${item.title.replace(/"/g, '""')}","${item.url}","${(item.summary || '').replace(/"/g, '""')}","${(item.memo || '').replace(/"/g, '""')}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
+      a.href = url;
       a.download = `news_scraps_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     function renderApp() {
